@@ -5,4 +5,8 @@
 /.react-router/
 /build/
 /docs/
-
+.env
+.env.local
+.env.development
+.env.test
+.env.production
