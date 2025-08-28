@@ -8,7 +8,6 @@ import type { RegisterPayload } from '~/type/authType'
 import { validateRegister } from '~/utils/validation'
 import { toast } from 'react-toastify'
 
-
 export default function Register() {
   const [errors, setErrors] = useState<Record<string, string> | null>(null)
   const [loading, setLoading] = useState(false)
@@ -54,7 +53,8 @@ export default function Register() {
           const respData = (err as any).response?.data
           if (respData) {
             // message may be a string or an object/array; normalize to string
-            const beMessage = typeof respData.message === 'string' ? respData.message : JSON.stringify(respData.message ?? respData)
+            const beMessage =
+              typeof respData.message === 'string' ? respData.message : JSON.stringify(respData.message ?? respData)
             setErrors({ _global: beMessage })
             toast.error(beMessage)
           } else {
