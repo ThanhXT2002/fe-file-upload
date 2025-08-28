@@ -3,13 +3,49 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --primary: #081F5C;
+  --secondary: #334EAC;
+  --tertiary: #7096D1;
+  --quaternary: #D0E3FF;
+  --quinary: #E7F1FF;
+  --senary: #F9FCFF;
 }
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  font-family: 'Roboto', sans-serif;
+  @apply bg-white dark:bg-gray-950 ;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
 }
+
+
+.flex__middle {
+    @apply flex justify-center items-center;
+  }
+
+  .flex__start {
+    @apply flex justify-start items-center;
+  }
+
+  .flexStartItem {
+    @apply flex justify-center items-start;
+  }
+
+  .flex__between {
+    @apply flex justify-between items-center;
+  }
+
+  .flex__evenly {
+    @apply flex justify-evenly items-center;
+  }
+
+  .flex__around {
+    @apply flex justify-around items-center;
+  }
+
+  .flex__end {
+    @apply flex justify-end items-center;
+  }
