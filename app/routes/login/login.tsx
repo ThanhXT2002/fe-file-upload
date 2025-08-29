@@ -72,12 +72,12 @@ export default function Login() {
             >
               {loading ? 'Đang đăng nhập...' : 'Login'}
             </button>
-            <a
-              href='#'
+            <NavLink
+              to='/forgot-password'
               className='text-[var(--secondary)] hover:text-[var(--tertiary)] transition-colors mt-3 block text-center'
             >
               Forgot password?
-            </a>
+            </NavLink>
           </form>
           <div className='text-center mt-6'>
             <p className=' text-opacity-80  text-[var(--secondary)]'>
