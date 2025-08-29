@@ -4,65 +4,73 @@ import axios from 'axios'
 import InputCommon from '~/components/inputCommon/inputCommon'
 import { register as registerService } from '~/api/authService'
 import type { ApiResponseError } from '~/type/apiTypes'
-import type { RegisterPayload } from '~/type/authType'
-import { validateRegister } from '~/utils/validation'
 import { toast } from 'react-toastify'
 
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const RegisterSchema = z
+  .object({
+    email: z.string().email({ message: 'Email is not in correct format' }),
+    password: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+    passwordConfirm: z.string().min(8, { message: 'Please confirm your password' })
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    path: ['passwordConfirm'],
+    message: 'Passwords do not match'
+  })
+
+type FormValues = z.infer<typeof RegisterSchema>
+
 export default function Register() {
-  const [errors, setErrors] = useState<Record<string, string> | null>(null)
+  const [globalError, setGlobalError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    reset
+  } = useForm<FormValues>({
+    resolver: zodResolver(RegisterSchema),
+    defaultValues: { email: '', password: '', passwordConfirm: '' }
+  })
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setErrors(null)
+  async function onSubmit(values: FormValues) {
+    setGlobalError(null)
     setLoading(true)
-    const fd = new FormData(e.currentTarget)
-    const payload: RegisterPayload = {
-      email: String(fd.get('email') || ''),
-      password: String(fd.get('password') || ''),
-      passwordConfirm: String(fd.get('passwordConfirm') || '')
-    }
-
-    console.log(payload)
-
-    // client-side validation
-    const clientErr = validateRegister(payload)
-    if (clientErr) {
-      setErrors(clientErr)
-      setLoading(false)
-      return
-    }
-
     try {
-      // backend only expects email and password
-      await registerService({ email: payload.email, password: payload.password })
-      toast.success('Đăng ký thành công')
+      await registerService({ email: values.email, password: values.password })
+      toast.success('Registration successful')
+      reset()
       navigate('/login')
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const api = (err as any).api as ApiResponseError | undefined
         if (api) {
           if (typeof api.errors === 'object' && api.errors !== null && !Array.isArray(api.errors)) {
-            setErrors(api.errors as Record<string, string>)
+            for (const [k, v] of Object.entries(api.errors)) {
+              // map field errors to form
+              setError(k as any, { message: String(v) })
+            }
           } else {
-            setErrors({ _global: String(api.errors ?? api.message) })
+            setGlobalError(String(api.errors ?? api.message))
           }
         } else {
-          // Try to extract message from backend generic error payload (e.g. { statusCode, message, code })
           const respData = (err as any).response?.data
           if (respData) {
-            // message may be a string or an object/array; normalize to string
             const beMessage =
               typeof respData.message === 'string' ? respData.message : JSON.stringify(respData.message ?? respData)
-            setErrors({ _global: beMessage })
+            setGlobalError(beMessage)
             toast.error(beMessage)
           } else {
-            setErrors({ _global: err.message ?? 'Đăng ký thất bại' })
+            setGlobalError((err as any).message ?? 'Registration failed')
           }
         }
       } else {
-        setErrors({ _global: String(err) })
+        setGlobalError(String(err))
       }
     } finally {
       setLoading(false)
@@ -75,32 +83,36 @@ export default function Register() {
         <div className='w-full h-full max-h-[500px] border border-gray-300 rounded-2xl bg-[var(--quinary)] py-8 px-3 flex__between flex-col'>
           <h1 className='text-center font-semibold uppercase text-[var(--primary)]'>Register</h1>
 
-          <form onSubmit={handleSubmit} className='w-full space-y-6'>
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full space-y-6'>
             <div className='w-full mb-6'>
               <InputCommon
+                {...register('email')}
                 name='email'
                 type='email'
                 label='Email'
                 showLabel={false}
                 placeholder='Enter your email'
                 isRequired
-                error={errors?.email ?? null}
+                error={errors.email?.message?.toString() ?? null}
               />
             </div>
+
             <div className='w-full mb-6'>
               <InputCommon
+                {...register('password')}
                 name='password'
                 type='password'
                 label='Password'
                 showLabel={false}
                 placeholder='Enter your password'
                 isRequired
-                error={errors?.password ?? null}
+                error={errors.password?.message?.toString() ?? null}
               />
             </div>
 
             <div className='w-full mb-6'>
               <InputCommon
+                {...register('passwordConfirm')}
                 name='passwordConfirm'
                 id='passwordConfirm'
                 type='password'
@@ -108,11 +120,11 @@ export default function Register() {
                 label='Repeat password'
                 placeholder='Enter repeat password'
                 isRequired
-                error={errors?.passwordConfirm ?? null}
+                error={errors.passwordConfirm?.message?.toString() ?? null}
               />
             </div>
 
-            {errors?._global && <div className='text-sm text-center text-red-400 mb-2'>{errors._global}</div>}
+            {globalError && <div className='text-sm text-center text-red-400 mb-2'>{globalError}</div>}
 
             <button
               type='submit'

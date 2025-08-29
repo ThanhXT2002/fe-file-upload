@@ -1,27 +1,53 @@
-import React, { useRef } from 'react'
-import { NavLink } from 'react-router'
+import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router'
+import InputCommon from '~/components/inputCommon/inputCommon'
+import { supabase } from '~/api/supabaseClient'
+import { toast } from 'react-toastify'
+
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 export default function Login() {
-  const formRef = useRef<HTMLFormElement>(null)
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [globalError, setGlobalError] = useState<string | null>(null)
 
-  // Xử lý submit form
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // const form = formRef.current;
-    // if (!form) return;
-    // const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
-    // const password = (form.elements.namedItem("password") as HTMLInputElement)?.value;
-    // const button = form.querySelector("button[type='submit']") as HTMLButtonElement;
-    // if (email && password && button) {
-    //   const originalText = button.textContent;
-    //   button.textContent = "Đang đăng nhập...";
-    //   button.disabled = true;
-    //   setTimeout(() => {
-    //     alert("Đăng nhập thành công! (Demo)");
-    //     button.textContent = originalText;
-    //     button.disabled = false;
-    //   }, 2000);
-    // }
+  const LoginSchema = z.object({
+    email: z.string().email({ message: 'Email is not in correct format' }),
+    password: z.string().min(1, { message: 'Password is required' })
+  })
+
+  type FormValues = z.infer<typeof LoginSchema>
+
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<FormValues>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: { email: '', password: '' }
+  })
+
+  async function onSubmit(values: FormValues) {
+    setGlobalError(null)
+    setLoading(true)
+    try {
+      const resp = await supabase.auth.signInWithPassword({ email: values.email, password: values.password })
+      if (resp.error) {
+        // Supabase returns generic message; map to field if possible
+        const msg = resp.error.message || 'Login failed'
+        // Try to detect common cases
+        if (/password/i.test(msg)) setError('password', { message: msg })
+        else if (/email/i.test(msg)) setError('email', { message: msg })
+        else setGlobalError(msg)
+        setLoading(false)
+        return
+      }
+      toast.success('Login success')
+      navigate('/')
+    } catch (err: any) {
+      setGlobalError(err?.message ?? 'Login error')
+      toast.error(err?.message ?? 'Login error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -29,30 +55,22 @@ export default function Login() {
       <div className='flex__middle h-full w-full max-w-md mx-auto py-10'>
         <div className='w-full h-full max-h-[500px] border border-gray-300 rounded-2xl bg-[var(--quinary)] py-8 px-3 flex__between flex-col'>
           <h1 className='text-center font-semibold uppercase text-[var(--primary)]'>Login</h1>
-          <form ref={formRef} onSubmit={handleSubmit} className='w-full'>
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             <div className='input-group relative mb-6'>
-              <input
-                type='email'
-                name='email'
-                className='input-field w-full py-4 px-5 bg-white bg-opacity-10 border-2 border-white border-opacity-20 rounded-xl text-gray-800 text-base transition-all duration-300 backdrop-blur-md focus:outline-none focus:border-[var(--tertiary)] focus:bg-white focus:bg-opacity-20 focus:translate-y-[-2px] focus:shadow-lg placeholder:text-gray-600 placeholder:text-opacity-70'
-                placeholder='Enter your email'
-                required
-              />
+              <InputCommon {...register('email')} type='email' placeholder='Enter your email' error={errors.email?.message?.toString() ?? null} showLabel={false} isRequired />
             </div>
             <div className='input-group relative mb-6'>
-              <input
-                type='password'
-                name='password'
-                className='input-field w-full py-4 px-5 bg-white bg-opacity-10 border-2 border-white border-opacity-20 rounded-xl text-gray-800 text-base transition-all duration-300 backdrop-blur-md focus:outline-none focus:border-[var(--tertiary)] focus:bg-white focus:bg-opacity-20 focus:translate-y-[-2px] focus:shadow-lg placeholder:text-gray-600 placeholder:text-opacity-70'
-                placeholder='Enter your password'
-                required
-              />
+              <InputCommon {...register('password')} type='password' placeholder='Enter your password' error={errors.password?.message?.toString() ?? null} showLabel={false} isRequired />
             </div>
+
+            {globalError && <div className='text-sm text-center text-red-400 mb-2'>{globalError}</div>}
+
             <button
               type='submit'
-              className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0'
+              disabled={loading}
+              className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 disabled:opacity-60'
             >
-              Login
+              {loading ? 'Đang đăng nhập...' : 'Login'}
             </button>
             <a
               href='#'

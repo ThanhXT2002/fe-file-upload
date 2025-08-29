@@ -1,7 +1,7 @@
 import React, { forwardRef, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-type Props = React.InputHTMLAttributes<HTMLInputElement> & {
+export type InputCommonProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   isRequired?: boolean;
   error?: string | null;
@@ -11,7 +11,7 @@ type Props = React.InputHTMLAttributes<HTMLInputElement> & {
 const DEFAULT_INPUT_CLASS =
   "input-field w-full py-4 px-5 bg-white bg-opacity-10 border-2 border-white border-opacity-20 rounded-xl text-gray-800 text-base transition-all duration-300 backdrop-blur-md focus:outline-none focus:border-[var(--tertiary)] focus:bg-white focus:bg-opacity-20 focus:translate-y-[-2px] focus:shadow-lg placeholder:text-gray-600 placeholder:text-opacity-70";
 
-const InputCommon = forwardRef<HTMLInputElement, Props>(
+const InputCommon = forwardRef<HTMLInputElement, InputCommonProps>(
 ({ label, isRequired = false, type = "text", error = null, className = "", id, name, showLabel = true, ...rest }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -45,7 +45,7 @@ const InputCommon = forwardRef<HTMLInputElement, Props>(
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800 cursor-pointer"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <FiEyeOff /> : <FiEye />}
