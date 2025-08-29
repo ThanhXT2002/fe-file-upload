@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, NavLink } from 'react-router'
+// ...existing imports
+import { useAuth } from '~/context/auth'
 import axios from 'axios'
 import InputCommon from '~/components/inputCommon/inputCommon'
 import { register as registerService } from '~/api/authService'
@@ -25,8 +27,12 @@ type FormValues = z.infer<typeof RegisterSchema>
 
 export default function Register() {
   const [globalError, setGlobalError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
+  const { session, loading: authLoading } = useAuth()
+  useEffect(() => {
+    if (!authLoading && session) navigate('/', { replace: true })
+  }, [authLoading, session, navigate])
   const {
     register,
     handleSubmit,
@@ -40,7 +46,7 @@ export default function Register() {
 
   async function onSubmit(values: FormValues) {
     setGlobalError(null)
-    setLoading(true)
+  setSubmitting(true)
     try {
       await registerService({ email: values.email, password: values.password })
       toast.success('Registration successful')
@@ -73,7 +79,7 @@ export default function Register() {
         setGlobalError(String(err))
       }
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -129,10 +135,10 @@ export default function Register() {
             <button
               type='submit'
               className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0'
-              disabled={loading}
-              aria-busy={loading}
+              disabled={submitting}
+              aria-busy={submitting}
             >
-              {loading ? 'loading...' : 'Register'}
+              {submitting ? 'loading...' : 'Register'}
             </button>
           </form>
           <div className='text-center mt-6 '>
@@ -151,3 +157,5 @@ export default function Register() {
     </div>
   )
 }
+
+// client-side guard implemented via Auth context

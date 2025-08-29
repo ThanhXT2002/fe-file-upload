@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router'
 import InputCommon from '~/components/inputCommon/inputCommon'
 import { supabase } from '~/api/supabaseClient'
 import { toast } from 'react-toastify'
+import { useAuth } from '~/context/auth'
 
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -13,7 +14,11 @@ type FormValues = z.infer<typeof ForgotSchema>
 
 export default function ForgotPassword() {
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const { session, loading: authLoading } = useAuth()
+  useEffect(() => {
+    if (!authLoading && session) navigate('/', { replace: true })
+  }, [authLoading, session, navigate])
   const [globalError, setGlobalError] = useState<string | null>(null)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
@@ -23,7 +28,7 @@ export default function ForgotPassword() {
 
   async function onSubmit(values: FormValues) {
     setGlobalError(null)
-    setLoading(true)
+  setSubmitting(true)
     try {
   // send reset link, redirect back to reset-password page
   const redirectTo = `${window.location.origin}/reset-password`
@@ -40,7 +45,7 @@ export default function ForgotPassword() {
       setGlobalError(err?.message ?? 'Lỗi khi gửi yêu cầu')
       toast.error(err?.message ?? 'Lỗi khi gửi yêu cầu')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -57,8 +62,8 @@ export default function ForgotPassword() {
 
             {globalError && <div className='text-sm text-center text-red-400 mb-2'>{globalError}</div>}
 
-            <button type='submit' disabled={loading} className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 disabled:opacity-60'>
-              {loading ? 'Đang gửi...' : 'Gửi yêu cầu'}
+            <button type='submit' disabled={submitting} className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 disabled:opacity-60'>
+              {submitting ? 'Đang gửi...' : 'Gửi yêu cầu'}
             </button>
           </form>
           <div className='mt-5 w-full flex__between'>
@@ -75,3 +80,5 @@ export default function ForgotPassword() {
     </div>
   )
 }
+
+// client-side guard implemented via Auth context

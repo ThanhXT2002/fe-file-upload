@@ -5,6 +5,7 @@ import './assets/styles/main.module.scss'
 import './app.css'
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
+import { AuthProvider } from './context/auth'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,7 +27,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <Outlet />
       <ToastContainer
         position='top-right'
@@ -37,7 +38,7 @@ export default function App() {
         pauseOnHover
         draggable
       />
-    </>
+    </AuthProvider>
   )
 }
 

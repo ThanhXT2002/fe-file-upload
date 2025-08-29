@@ -1,19 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { supabase } from '~/api/supabaseClient'
+import { useAuth } from '~/context/auth'
 import { toast } from 'react-toastify'
 
 export default function CheckEmail() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const { session, loading: authLoading } = useAuth()
+  useEffect(() => {
+    if (!authLoading && session) navigate('/', { replace: true })
+  }, [authLoading, session, navigate])
 
   // email may be passed via navigate state from forgot-password
   const email = (location as any)?.state?.email as string | undefined
 
   async function handleResend() {
     if (!email) return
-    setLoading(true)
+  setSubmitting(true)
     try {
       const redirectTo = `${window.location.origin}/reset-password`
       const resp = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
@@ -25,7 +30,7 @@ export default function CheckEmail() {
     } catch (err: any) {
       toast.error(err?.message ?? 'Resend error')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -42,8 +47,8 @@ export default function CheckEmail() {
               Quay về đăng nhập
             </button>
             {email && (
-              <button onClick={handleResend} disabled={loading} className='w-full py-3 rounded-xl text-white font-semibold bg-[var(--tertiary)] disabled:opacity-60 '>
-                {loading ? 'Đang gửi lại...' : 'Gửi lại email'}
+              <button onClick={handleResend} disabled={submitting} className='w-full py-3 rounded-xl text-white font-semibold bg-[var(--tertiary)] disabled:opacity-60 '>
+                {submitting ? 'Đang gửi lại...' : 'Gửi lại email'}
               </button>
             )}
           </div>
@@ -52,3 +57,5 @@ export default function CheckEmail() {
     </div>
   )
 }
+
+// client-side guard implemented via Auth context

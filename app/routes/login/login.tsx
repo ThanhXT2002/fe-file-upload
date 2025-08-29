@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router'
 import InputCommon from '~/components/inputCommon/inputCommon'
 import { supabase } from '~/api/supabaseClient'
 import { toast } from 'react-toastify'
+import { useAuth } from '~/context/auth'
 
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -10,7 +11,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 export default function Login() {
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
+  const { session, loading: authLoading } = useAuth()
+  useEffect(() => {
+    if (!authLoading && session) navigate('/', { replace: true })
+  }, [authLoading, session, navigate])
+  const [submitting, setSubmitting] = useState(false)
   const [globalError, setGlobalError] = useState<string | null>(null)
 
   const LoginSchema = z.object({
@@ -26,8 +31,8 @@ export default function Login() {
   })
 
   async function onSubmit(values: FormValues) {
-    setGlobalError(null)
-    setLoading(true)
+  setGlobalError(null)
+  setSubmitting(true)
     try {
       const resp = await supabase.auth.signInWithPassword({ email: values.email, password: values.password })
       if (resp.error) {
@@ -37,7 +42,7 @@ export default function Login() {
         if (/password/i.test(msg)) setError('password', { message: msg })
         else if (/email/i.test(msg)) setError('email', { message: msg })
         else setGlobalError(msg)
-        setLoading(false)
+        setSubmitting(false)
         return
       }
       toast.success('Login success')
@@ -46,7 +51,7 @@ export default function Login() {
       setGlobalError(err?.message ?? 'Login error')
       toast.error(err?.message ?? 'Login error')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -67,10 +72,10 @@ export default function Login() {
 
             <button
               type='submit'
-              disabled={loading}
+              disabled={submitting}
               className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 disabled:opacity-60'
             >
-              {loading ? 'Đang đăng nhập...' : 'Login'}
+              {submitting ? 'Đang đăng nhập...' : 'Login'}
             </button>
             <NavLink
               to='/forgot-password'
@@ -96,3 +101,5 @@ export default function Login() {
     </div>
   )
 }
+
+// client-side guard implemented via Auth context
