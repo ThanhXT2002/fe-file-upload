@@ -5,6 +5,7 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
+import { useNavigate } from "react-router"
 
 import {
   Avatar,
@@ -26,6 +27,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar"
+import { useAuth } from '~/context/auth'
 
 export function NavUser({
   user,
@@ -37,6 +39,8 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { signOut } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <SidebarMenu>
@@ -98,7 +102,8 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <IconLogout />
-              Log out
+               <button onClick={async ()=>{ await signOut(); navigate('/login') }} className="cursor-pointer"> Log out</button>
+
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
