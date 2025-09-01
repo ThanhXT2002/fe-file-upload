@@ -1,10 +1,14 @@
 import React from 'react'
+import { ChartAreaInteractive } from '~/components/chart-area-interactive'
+import { SectionCards } from '~/components/section-cards'
 
 export default function DashboardIndex(){
   return (
     <div>
-      <h1 className='text-2xl font-bold'>Dashboard Overview</h1>
-      <p className='mt-4'>This is the overview page inside the dashboard layout.</p>
+      <SectionCards />
+      <div className="px-4 lg:px-6">
+        <ChartAreaInteractive />
+      </div>
     </div>
   )
 }

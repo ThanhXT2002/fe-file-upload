@@ -3,8 +3,6 @@ import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration }
 import type { Route } from './+types/root'
 import './assets/styles/main.module.scss'
 import './app.css'
-import 'react-toastify/dist/ReactToastify.css'
-import { ToastContainer } from 'react-toastify'
 import { AuthProvider } from './context/auth'
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -25,22 +23,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function App() {
-  return (
-    <AuthProvider>
-      <Outlet />
-      <ToastContainer
-        position='top-right'
-        autoClose={4000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
-    </AuthProvider>
-  )
-}
+export { default } from './root.client'
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = 'Oops!'

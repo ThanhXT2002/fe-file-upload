@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { NavLink, useNavigate } from 'react-router'
+import { NavLink, useNavigate, useLocation } from 'react-router'
 import InputCommon from '~/components/inputCommon/inputCommon'
 import { supabase } from '~/api/supabaseClient'
 import { toast } from 'react-toastify'
@@ -12,9 +12,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 export default function Login() {
   const navigate = useNavigate()
   const { session, loading: authLoading } = useAuth()
+  const location = useLocation()
+  const from = (location as any)?.state?.from as string | undefined
+
   useEffect(() => {
-    if (!authLoading && session) navigate('/', { replace: true })
-  }, [authLoading, session, navigate])
+    if (!authLoading && session) {
+      // if navigated here from a protected route, go back there
+      if (from) navigate(from, { replace: true })
+      else navigate('/', { replace: true })
+    }
+  }, [authLoading, session, navigate, from])
   const [submitting, setSubmitting] = useState(false)
   const [globalError, setGlobalError] = useState<string | null>(null)
 
@@ -45,8 +52,9 @@ export default function Login() {
         setSubmitting(false)
         return
       }
-      toast.success('Login success')
-      navigate('/')
+  toast.success('Login success')
+  if (from) navigate(from)
+  else navigate('/')
     } catch (err: any) {
       setGlobalError(err?.message ?? 'Login error')
       toast.error(err?.message ?? 'Login error')
