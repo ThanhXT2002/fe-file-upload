@@ -1,3 +1,8 @@
+// Export handle for route title
+export const handle = {
+  name: 'Dashboard'
+}
+
 import { ChartAreaInteractive } from '~/components/chart-area-interactive'
 import { SectionCards } from '~/components/section-cards'
 import { PermissionGuard, UserRoleBadge } from '~/components/permission-guard'
@@ -12,10 +17,10 @@ export default function DashboardIndex(){
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
-              Chào mừng, {userProfile?.name || userProfile?.email}
+              Welcome, {userProfile?.name || userProfile?.email}
             </h1>
             <p className="text-muted-foreground">
-              Đây là dashboard của bạn
+              This is your dashboard
             </p>
           </div>
           <UserRoleBadge />
@@ -36,7 +41,7 @@ export default function DashboardIndex(){
               Admin Panel
             </h3>
             <p className="text-red-600 dark:text-red-300">
-              Chỉ Admin mới có thể thấy nội dung này
+              Only Admins can see this content
             </p>
           </div>
         </div>
@@ -50,7 +55,7 @@ export default function DashboardIndex(){
               Editor Tools
             </h3>
             <p className="text-blue-600 dark:text-blue-300">
-              Chỉ Editor và Admin mới có thể thấy nội dung này
+              Only Editors and Admins can see this content
             </p>
           </div>
         </div>
@@ -64,7 +69,7 @@ export default function DashboardIndex(){
               Write Access
             </h3>
             <p className="text-green-600 dark:text-green-300">
-              Bạn có quyền chỉnh sửa nội dung
+              You have permission to edit content
             </p>
           </div>
         </div>

@@ -1,3 +1,8 @@
+// Export handle for route title
+export const handle = {
+  name: 'Settings'
+}
+
 import React from 'react'
 
 export default function DashboardSettings(){

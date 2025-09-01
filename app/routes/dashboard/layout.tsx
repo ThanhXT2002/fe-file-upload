@@ -18,11 +18,11 @@ export default function DashboardLayout() {
     }
   }, [loading, session, navigate, location])
 
-  if (loading) return <div className='p-6'>Đang kiểm tra phiên...</div>
+  if (loading) return <div className='p-6'>Checking session...</div>
   
   // Show loading if user profile is not loaded yet
   if (session && !userProfile) {
-    return <div className='p-6'>Đang tải thông tin người dùng...</div>
+    return <div className='p-6'>Loading user profile...</div>
   }
 
   return (
@@ -50,55 +50,3 @@ export default function DashboardLayout() {
     </SidebarProvider>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useEffect } from 'react'
-// import { NavLink, Outlet, useNavigate, useLocation } from 'react-router'
-// import { useAuth } from '~/context/auth'
-
-// export default function DashboardLayout() {
-//   const { session, loading, signOut } = useAuth()
-//   const navigate = useNavigate()
-
-//   const location = useLocation()
-//   useEffect(() => {
-//     if (!loading && !session) {
-//       const from = `${location.pathname}${location.search}${location.hash}`
-//       navigate('/login', { replace: true, state: { from } })
-//     }
-//   }, [loading, session, navigate, location])
-
-//   if (loading) return <div className='p-6'>Đang kiểm tra phiên...</div>
-
-//   return (
-//     <div className='min-h-screen bg-slate-50 text-black'>
-//       <header className='flex items-center justify-between p-4 shadow-sm bg-white'>
-//         <div className='flex items-center gap-4'>
-//           <h2 className='text-lg font-semibold'>My Dashboard</h2>
-//           <nav className='space-x-3'>
-//             <NavLink to='/' end className={({isActive})=> isActive ? 'font-bold' : ''}>Overview</NavLink>
-//             <NavLink to='settings' className={({isActive})=> isActive ? 'font-bold' : ''}>Settings</NavLink>
-//           </nav>
-//         </div>
-//         <div className='flex items-center gap-4'>
-//           <button onClick={async ()=>{ await signOut(); navigate('/login') }} className='px-3 py-1 bg-red-500 text-white rounded'>Sign out</button>
-//         </div>
-//       </header>
-
-//       <main className='p-6'>
-//         <Outlet />
-//       </main>
-//     </div>
-//   )
-// }

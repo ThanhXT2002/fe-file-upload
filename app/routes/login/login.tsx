@@ -83,7 +83,7 @@ export default function Login() {
               disabled={submitting}
               className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 disabled:opacity-60'
             >
-              {submitting ? 'Đang đăng nhập...' : 'Login'}
+              {submitting ? 'Logging in...' : 'Login'}
             </button>
             <NavLink
               to='/forgot-password'

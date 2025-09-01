@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-const ForgotSchema = z.object({ email: z.string().email({ message: 'Email không hợp lệ' }) })
+const ForgotSchema = z.object({ email: z.string().email({ message: 'Invalid email' }) })
 type FormValues = z.infer<typeof ForgotSchema>
 
 export default function ForgotPassword() {
@@ -33,17 +33,17 @@ export default function ForgotPassword() {
   // send reset link, redirect back to reset-password page
   const redirectTo = `${window.location.origin}/reset-password`
       const resp = await supabase.auth.resetPasswordForEmail(values.email, { redirectTo })
-      if (resp.error) {
-        setGlobalError(resp.error.message ?? 'Yêu cầu thất bại')
-        toast.error(resp.error.message ?? 'Yêu cầu thất bại')
+  if (resp.error) {
+    setGlobalError(resp.error.message ?? 'Request failed')
+    toast.error(resp.error.message ?? 'Request failed')
         return
       }
-  toast.success('Đã gửi email đặt lại mật khẩu. Vui lòng kiểm tra hộp thư.')
+  toast.success('Password reset email sent. Please check your inbox.')
   // navigate to a dedicated check-email page to improve UX
   navigate('/check-email', { state: { email: values.email } })
     } catch (err: any) {
-      setGlobalError(err?.message ?? 'Lỗi khi gửi yêu cầu')
-      toast.error(err?.message ?? 'Lỗi khi gửi yêu cầu')
+      setGlobalError(err?.message ?? 'Error sending request')
+      toast.error(err?.message ?? 'Error sending request')
     } finally {
       setSubmitting(false)
     }
@@ -63,7 +63,7 @@ export default function ForgotPassword() {
             {globalError && <div className='text-sm text-center text-red-400 mb-2'>{globalError}</div>}
 
             <button type='submit' disabled={submitting} className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 disabled:opacity-60'>
-              {submitting ? 'Đang gửi...' : 'Gửi yêu cầu'}
+              {submitting ? 'Sending...' : 'Send request'}
             </button>
           </form>
           <div className='mt-5 w-full flex__between'>

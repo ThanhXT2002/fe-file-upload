@@ -1,4 +1,10 @@
-import  { useState } from 'react'
+import React, { useState } from 'react'
+
+// Export handle for custom route data
+export const handle = {
+  name: 'Account'
+}
+
 import { useAuth } from '~/context/auth'
 import { UserRoleBadge } from '~/components/permission-guard'
 import { updateProfile } from '~/api/authService'
@@ -32,9 +38,9 @@ function ProfilePage() {
     if (userProfile?.id) {
       try {
         await navigator.clipboard.writeText(userProfile.id)
-        toast.success('API Key đã được sao chép!')
+        toast.success('API key copied!')
       } catch {
-        toast.error('Không thể sao chép API Key')
+        toast.error('Unable to copy API key')
       }
     }
   }
@@ -43,11 +49,11 @@ function ProfilePage() {
   const handleSaveProfile = async () => {
     try {
       await updateProfile({ name: editedName })
-      toast.success('Cập nhật thông tin thành công!')
+      toast.success('Profile updated successfully!')
       setIsEditing(false)
       await refreshProfile()
     } catch {
-      toast.error('Cập nhật thông tin thất bại!')
+      toast.error('Failed to update profile!')
     }
   }
 
@@ -59,7 +65,7 @@ function ProfilePage() {
 
   // Format date
   const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Chưa có thông tin'
+    if (!dateString) return 'No information'
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric',
       month: 'long', 
@@ -84,8 +90,8 @@ function ProfilePage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="text-lg font-medium">Đang tải thông tin...</div>
-          <div className="text-sm text-muted-foreground">Vui lòng đợi trong giây lát</div>
+      <div className="text-lg font-medium">Loading profile...</div>
+      <div className="text-sm text-muted-foreground">Please wait a moment</div>
         </div>
       </div>
     )
@@ -101,26 +107,26 @@ function ProfilePage() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <IconUser className="h-5 w-5" />
-                  Thông tin cơ bản
+                  Basic information
                 </CardTitle>
                 <CardDescription>
-                  Thông tin cá nhân và cài đặt tài khoản
+                  Personal info and account settings
                 </CardDescription>
               </div>
               {!isEditing ? (
                 <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                   <IconEdit className="h-4 w-4 mr-2" />
-                  Chỉnh sửa
+                  Edit
                 </Button>
               ) : (
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={handleCancelEdit}>
                     <IconX className="h-4 w-4 mr-2" />
-                    Hủy
+                    Cancel
                   </Button>
                   <Button size="sm" onClick={handleSaveProfile}>
                     <IconDeviceFloppy className="h-4 w-4 mr-2" />
-                    Lưu
+                    Save
                   </Button>
                 </div>
               )}
@@ -136,12 +142,12 @@ function ProfilePage() {
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-1">
-                <p className="text-sm font-medium">Ảnh đại diện</p>
+                <p className="text-sm font-medium">Avatar</p>
                 <p className="text-xs text-muted-foreground">
-                  {userProfile.avatarUrl ? 'Có ảnh đại diện' : 'Chưa có ảnh đại diện'}
+                  {userProfile.avatarUrl ? 'Avatar available' : 'No avatar'}
                 </p>
                 <Button variant="outline" size="sm" disabled>
-                  Thay đổi ảnh
+                  Change photo
                 </Button>
               </div>
             </div>
@@ -151,18 +157,18 @@ function ProfilePage() {
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Họ và tên</Label>
+                <Label htmlFor="name">Full name</Label>
                 {isEditing ? (
                   <Input
                     id="name"
                     value={editedName}
                     onChange={(e) => setEditedName(e.target.value)}
-                    placeholder="Nhập họ và tên"
+                    placeholder="Enter full name"
                   />
                 ) : (
                   <div className="flex items-center space-x-2">
                     <Input
-                      value={userProfile.name || 'Chưa có thông tin'}
+                      value={userProfile.name || 'No information'}
                       disabled
                       className="bg-muted"
                     />
@@ -184,7 +190,7 @@ function ProfilePage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Vai trò</Label>
+                <Label>Role</Label>
                 <div className="flex items-center space-x-2">
                   <IconShield className="h-4 w-4 text-muted-foreground" />
                   <Input
@@ -196,7 +202,7 @@ function ProfilePage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Ngày tạo tài khoản</Label>
+                <Label>Account created</Label>
                 <div className="flex items-center space-x-2">
                   <IconCalendar className="h-4 w-4 text-muted-foreground" />
                   <Input
@@ -215,18 +221,18 @@ function ProfilePage() {
           {/* Account Status Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Trạng thái tài khoản</CardTitle>
-            </CardHeader>
+                <CardTitle className="text-lg">Account status</CardTitle>
+              </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Trạng thái</span>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  Đang hoạt động
-                </Badge>
+                  <span className="text-sm text-muted-foreground">Status</span>
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    Active
+                  </Badge>
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Vai trò</span>
+                <span className="text-sm text-muted-foreground">Role</span>
                 <UserRoleBadge />
               </div>
 
@@ -247,7 +253,7 @@ function ProfilePage() {
                 API Key
               </CardTitle>
               <CardDescription>
-                Key để sử dụng API dịch vụ
+                Key for accessing the API
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -264,7 +270,7 @@ function ProfilePage() {
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Nhấn để sao chép API key đầy đủ
+                  Click to copy the full API key
                 </p>
               </div>
             </CardContent>

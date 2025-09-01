@@ -58,7 +58,7 @@ export default function ResetPassword() {
         toast.error(error.message ?? 'Could not set password')
         return
       }
-      toast.success('Mật khẩu đã được cập nhật. Bạn sẽ được đăng nhập tự động.')
+  toast.success('Password updated. You will be logged in automatically.')
       navigate('/')
     } catch (err: any) {
       setGlobalError(err?.message ?? 'Error setting password')
@@ -86,7 +86,7 @@ export default function ResetPassword() {
             </div>
             {globalError && <div className='text-sm text-center text-red-400 mb-2'>{globalError}</div>}
             <button type='submit' disabled={submitting} className='login-btn w-full py-4 px-6 rounded-xl text-white font-semibold text-lg shadow-lg bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--tertiary)] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 disabled:opacity-60'>
-              {submitting ? 'Đang lưu...' : 'Lưu mật khẩu mới'}
+              {submitting ? 'Saving...' : 'Save new password'}
             </button>
           </form>
           <div className='mt-5 w-full flex__between'>
