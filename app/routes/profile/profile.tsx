@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { useAuth } from '~/context/auth'
-import { usePermissions } from '~/hooks/use-permissions'
 import { UserRoleBadge } from '~/components/permission-guard'
 import { updateProfile } from '~/api/authService'
 import { Button } from '~/components/ui/button'
@@ -25,7 +24,6 @@ import { toast } from 'sonner'
 
 function ProfilePage() {
   const { userProfile, refreshProfile } = useAuth()
-  const { isAdmin, isEditor } = usePermissions()
   const [isEditing, setIsEditing] = useState(false)
   const [editedName, setEditedName] = useState(userProfile?.name || '')
 
@@ -94,18 +92,7 @@ function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6 max-w-4xl">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Thông tin cá nhân</h1>
-          <p className="text-muted-foreground">
-            Quản lý thông tin tài khoản và cài đặt của bạn
-          </p>
-        </div>
-        <UserRoleBadge />
-      </div>
-
+    <div className="container mx-auto py-6 space-y-6 max-w-6xl px-3">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Information Card */}
         <Card className="lg:col-span-2">
@@ -283,61 +270,7 @@ function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Permissions Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Quyền hạn</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Xem nội dung</span>
-                  <Badge variant="outline" className="bg-green-50 text-green-700">
-                    Có
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Chỉnh sửa</span>
-                  <Badge 
-                    variant="outline" 
-                    className={isEditor() || isAdmin() 
-                      ? "bg-green-50 text-green-700" 
-                      : "bg-red-50 text-red-700"
-                    }
-                  >
-                    {isEditor() || isAdmin() ? 'Có' : 'Không'}
-                  </Badge>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Xóa nội dung</span>
-                  <Badge 
-                    variant="outline" 
-                    className={isAdmin() 
-                      ? "bg-green-50 text-green-700" 
-                      : "bg-red-50 text-red-700"
-                    }
-                  >
-                    {isAdmin() ? 'Có' : 'Không'}
-                  </Badge>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Quản trị hệ thống</span>
-                  <Badge 
-                    variant="outline" 
-                    className={isAdmin() 
-                      ? "bg-green-50 text-green-700" 
-                      : "bg-red-50 text-red-700"
-                    }
-                  >
-                    {isAdmin() ? 'Có' : 'Không'}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+         
         </div>
       </div>
     </div>
