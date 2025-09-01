@@ -47,12 +47,12 @@ const baseNavItems = [
 const adminNavItems = [
   {
     title: "User Management",
-    url: "#",
+    url: "/user-management",
     icon: IconUsers,
   },
   {
     title: "System Settings",
-    url: "#",
+    url: "/settings",
     icon: IconSettings,
   },
 ]

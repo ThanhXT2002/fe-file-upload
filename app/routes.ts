@@ -5,7 +5,8 @@ export default [
   route('', 'routes/dashboard/layout.tsx', [
     index('routes/dashboard/index.tsx'),
     route('settings', 'routes/dashboard/settings.tsx'),
-    route('profile', 'routes/profile/profile.tsx')
+    route('profile', 'routes/profile/profile.tsx'),
+    route('user-management', 'routes/user-management/user-management.tsx')
   ]),
 
   // Auth routes
