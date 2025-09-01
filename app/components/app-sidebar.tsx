@@ -3,21 +3,18 @@ import {
   IconCamera,
   IconChartBar,
   IconDashboard,
-  IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
   IconSettings,
   IconUsers,
+  IconLifebuoy,
+  IconUserCircle,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "~/components/nav-documents"
+// import { NavDocuments } from "~/components/nav-documents"
 import { NavMain } from "~/components/nav-main"
 import { NavSecondary } from "~/components/nav-secondary"
 import { NavUser } from "~/components/nav-user"
@@ -30,6 +27,63 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar"
+import { usePermissions } from "~/hooks/use-permissions"
+
+// Base navigation items for all users
+const baseNavItems = [
+  {
+    title: "Dashboard",
+    url: "/",
+    icon: IconDashboard,
+  },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: IconUserCircle,
+  },
+]
+
+// Admin-only navigation items
+const adminNavItems = [
+  {
+    title: "User Management",
+    url: "#",
+    icon: IconUsers,
+  },
+  {
+    title: "System Settings",
+    url: "#",
+    icon: IconSettings,
+  },
+]
+
+// Editor navigation items
+const editorNavItems = [
+  {
+    title: "Content Management",
+    url: "#",
+    icon: IconFileDescription,
+  },
+  {
+    title: "Media Library", 
+    url: "#",
+    icon: IconCamera,
+  },
+]
+
+// User navigation items
+const userNavItems = [
+  {
+    title: "My Files",
+    url: "#",
+    icon: IconFolder,
+  },
+  {
+    title: "Analytics",
+    url: "#",
+    icon: IconChartBar,
+  },
+]
 
 const data = {
   user: {
@@ -37,118 +91,63 @@ const data = {
     email: "m@example.com",
     avatar: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fui.shadcn.com%2Fdocs%2Fcomponents%2Favatar&psig=AOvVaw0yOmhy-tp2xb9Z9lhm9p3u&ust=1756802836894000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNjr-dyWt48DFQAAAAAdAAAAABAE",
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
   navSecondary: [
     {
-      title: "Settings",
+      title: "Support",
       url: "#",
-      icon: IconSettings,
+      icon: IconLifebuoy,
     },
     {
-      title: "Get Help",
+      title: "Feedback",
       url: "#",
       icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
     },
   ],
   documents: [
     {
-      name: "Data Library",
+      name: "Design Engineering",
       url: "#",
-      icon: IconDatabase,
+      icon: IconFileDescription,
     },
     {
-      name: "Reports",
+      name: "Sales & Marketing",
       url: "#",
-      icon: IconReport,
+      icon: IconFileAi,
     },
     {
-      name: "Word Assistant",
+      name: "Travel",
       url: "#",
-      icon: IconFileWord,
+      icon: IconCamera,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { isAdmin, isEditor, isUser, userProfile } = usePermissions()
+
+  // Build navigation items based on user role
+  const getNavigationItems = () => {
+    let navItems = [...baseNavItems]
+
+    if (isAdmin()) {
+      navItems = [...navItems, ...adminNavItems, ...editorNavItems, ...userNavItems]
+    } else if (isEditor()) {
+      navItems = [...navItems, ...editorNavItems, ...userNavItems]
+    } else if (isUser()) {
+      navItems = [...navItems, ...userNavItems]
+    }
+
+    return navItems
+  }
+
+  // Update user data with actual profile info
+  const userData = {
+    ...data.user,
+    name: userProfile?.name || data.user.name,
+    email: userProfile?.email || data.user.email,
+    avatar: userProfile?.avatarUrl || data.user.avatar,
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -160,19 +159,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">File Manager</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavMain items={getNavigationItems()} />
+        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
   )

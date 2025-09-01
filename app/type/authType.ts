@@ -16,4 +16,13 @@ export type RegisterResponseData = {
   [k: string]: unknown
 }
 
+export type UserProfile = {
+  id: string
+  email: string
+  name?: string
+  role: 'ADMIN' | 'USER' | 'EDITOR'
+  avatarUrl?: string
+  createdAt: string
+}
+
 export default {} as const

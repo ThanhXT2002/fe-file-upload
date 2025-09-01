@@ -88,7 +88,8 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <IconUserCircle />
-                Account
+                 <button onClick={ () => { navigate('/profile') } } className="cursor-pointer">  Account</button>
+
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconCreditCard />

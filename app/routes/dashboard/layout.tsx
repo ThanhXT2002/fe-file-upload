@@ -1,12 +1,13 @@
 import { AppSidebar } from "~/components/app-sidebar"
 import { SiteHeader } from "~/components/site-header"
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar"
+import { Toaster } from "~/components/ui/sonner"
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useEffect } from 'react'
 import { useAuth } from '~/context/auth'
 
 export default function DashboardLayout() {
-  const { session, loading } = useAuth()
+  const { session, loading, userProfile } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -18,6 +19,11 @@ export default function DashboardLayout() {
   }, [loading, session, navigate, location])
 
   if (loading) return <div className='p-6'>Đang kiểm tra phiên...</div>
+  
+  // Show loading if user profile is not loaded yet
+  if (session && !userProfile) {
+    return <div className='p-6'>Đang tải thông tin người dùng...</div>
+  }
 
   return (
     <SidebarProvider
@@ -40,6 +46,7 @@ export default function DashboardLayout() {
           </div>
         </div>
       </SidebarInset>
+      <Toaster />
     </SidebarProvider>
   )
 }

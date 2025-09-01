@@ -4,7 +4,8 @@ export default [
   // Dashboard layout at root with nested pages
   route('', 'routes/dashboard/layout.tsx', [
     index('routes/dashboard/index.tsx'),
-    route('settings', 'routes/dashboard/settings.tsx')
+    route('settings', 'routes/dashboard/settings.tsx'),
+    route('profile', 'routes/profile/profile.tsx')
   ]),
 
   // Auth routes
