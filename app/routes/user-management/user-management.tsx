@@ -198,7 +198,7 @@ function UserManager() {
         </Card>
 
         {/* Users Table */}
-        <div className='rounded-lg overflow-hidden relative'>
+        <div className='rounded-lg overflow-hidden relative shadow-md'>
           {tableLoading && (
             <div className='absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center'>
               <div className='text-center'>
