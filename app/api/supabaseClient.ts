@@ -14,7 +14,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 // the latest access token and headers update automatically on session change.
 export function setupSupabaseAuth(axiosInstance: AxiosInstance) {
   // set header from current session (if any)
-  void supabase.auth.getSession().then((r:any) => {
+  void supabase.auth.getSession().then((r: any) => {
     const session = (r as any)?.data?.session
     if (session?.access_token) {
       axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${session.access_token}`
@@ -22,7 +22,7 @@ export function setupSupabaseAuth(axiosInstance: AxiosInstance) {
   })
 
   // subscribe to auth state changes and update axios header
-  supabase.auth.onAuthStateChange((_event:any, session:any) => {
+  supabase.auth.onAuthStateChange((_event: any, session: any) => {
     if (session?.access_token) {
       axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${session.access_token}`
     } else {

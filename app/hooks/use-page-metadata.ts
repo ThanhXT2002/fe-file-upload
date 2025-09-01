@@ -19,19 +19,13 @@ const routeMetadata: Record<string, PageMetadata> = {
     title: 'Profile',
     description: 'Manage account and personal settings',
     icon: '👤',
-    breadcrumbs: [
-      { title: 'Dashboard', href: '/' },
-      { title: 'Profile' }
-    ]
+    breadcrumbs: [{ title: 'Dashboard', href: '/' }, { title: 'Profile' }]
   },
   '/settings': {
     title: 'Settings',
     description: 'System configuration and options',
     icon: '⚙️',
-    breadcrumbs: [
-      { title: 'Dashboard', href: '/' },
-      { title: 'Settings' }
-    ]
+    breadcrumbs: [{ title: 'Dashboard', href: '/' }, { title: 'Settings' }]
   },
   '/login': {
     title: 'Login',
@@ -62,17 +56,17 @@ const routeMetadata: Record<string, PageMetadata> = {
 
 export function usePageMetadata(): PageMetadata {
   const location = useLocation()
-  
+
   const getPageMetadata = (): PageMetadata => {
     const currentPath = location.pathname
-    
+
     // Check for exact match first
     if (routeMetadata[currentPath]) {
       return routeMetadata[currentPath]
     }
-    
+
     // Check for partial matches (for dynamic routes)
-    const dynamicRoutes = Object.keys(routeMetadata).filter(route => route.includes(':'))
+    const dynamicRoutes = Object.keys(routeMetadata).filter((route) => route.includes(':'))
     for (const route of dynamicRoutes) {
       const pattern = route.replace(/:[^/]+/g, '[^/]+')
       const regex = new RegExp(`^${pattern}$`)
@@ -80,7 +74,7 @@ export function usePageMetadata(): PageMetadata {
         return routeMetadata[route]
       }
     }
-    
+
     // Default fallback
     return {
       title: 'File Manager',

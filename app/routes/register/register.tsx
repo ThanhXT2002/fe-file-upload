@@ -46,7 +46,7 @@ export default function Register() {
 
   async function onSubmit(values: FormValues) {
     setGlobalError(null)
-  setSubmitting(true)
+    setSubmitting(true)
     try {
       await registerService({ email: values.email, password: values.password })
       toast.success('Registration successful')

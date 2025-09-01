@@ -60,11 +60,14 @@ export const userService = {
   },
 
   // Update user
-  async updateUser(id: string, data: {
-    name?: string
-    role?: string
-    active?: boolean
-  }): Promise<User> {
+  async updateUser(
+    id: string,
+    data: {
+      name?: string
+      role?: string
+      active?: boolean
+    }
+  ): Promise<User> {
     const response = await axiosClient.put(`/users/${id}`, data)
     return response.data
   },

@@ -15,7 +15,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Meta />
         <Links />
-        <script 
+        <script
           dangerouslySetInnerHTML={{
             __html: `
               // Suppress React hydration warnings in development
@@ -46,7 +46,7 @@ export default function App() {
     <AuthProvider>
       <Outlet />
       <ToastContainer
-        position="top-right"
+        position='top-right'
         autoClose={4000}
         hideProgressBar={false}
         newestOnTop

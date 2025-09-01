@@ -46,10 +46,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data } = await supabase.auth.getSession()
         const s = (data as any)?.session ?? null
         if (!mounted) return
-        
+
         setSession(s)
         setUser(s?.user ?? null)
-        
+
         // Fetch user profile if session exists
         if (s) {
           await fetchUserProfile(s)
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const sess = s ?? null
       setSession(sess)
       setUser((sess as any)?.user ?? null)
-      
+
       // Fetch user profile when auth state changes
       if (sess) {
         await fetchUserProfile(sess)
@@ -86,12 +86,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signInWithPassword(email: string, password: string) {
     const result = await supabase.auth.signInWithPassword({ email, password })
-    
+
     // Fetch profile after successful login
     if (result.data?.session) {
       await fetchUserProfile(result.data.session)
     }
-    
+
     return result
   }
 

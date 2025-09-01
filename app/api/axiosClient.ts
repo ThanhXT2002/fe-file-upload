@@ -1,12 +1,12 @@
-import axios, { AxiosError, type AxiosResponse } from "axios";
-import type { ApiResponse, ApiResponseOk, ApiResponseError } from "~/type/apiTypes";
+import axios, { AxiosError, type AxiosResponse } from 'axios'
+import type { ApiResponse, ApiResponseOk, ApiResponseError } from '~/type/apiTypes'
 import { supabase, setupSupabaseAuth } from './supabaseClient'
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000,
-  headers: { "Content-Type": "application/json" },
-});
+  headers: { 'Content-Type': 'application/json' }
+})
 
 // integrate supabase auth with axios defaults
 setupSupabaseAuth(axiosClient)
@@ -29,17 +29,17 @@ axiosClient.interceptors.request.use(async (cfg) => {
 // response interceptor: nếu BE trả {status: true,...} trả về data, nếu error -> ném ApiError
 axiosClient.interceptors.response.use(
   (res: AxiosResponse) => {
-    const payload = res.data as ApiResponse;
+    const payload = res.data as ApiResponse
     if (payload && (payload as ApiResponseOk).status === true) {
       // unwrap BE data into res.data but keep AxiosResponse shape
-      res.data = (payload as ApiResponseOk<unknown>).data;
-      return res;
+      res.data = (payload as ApiResponseOk<unknown>).data
+      return res
     }
     // trường hợp BE trả lỗi cấu trúc ApiResponseError
-    const apiErr = payload as ApiResponseError;
-    const err = new Error(apiErr?.message ?? "API error") as AxiosError & { api?: ApiResponseError };
-    err.api = apiErr;
-    return Promise.reject(err);
+    const apiErr = payload as ApiResponseError
+    const err = new Error(apiErr?.message ?? 'API error') as AxiosError & { api?: ApiResponseError }
+    err.api = apiErr
+    return Promise.reject(err)
   },
   async (error: AxiosError) => {
     // nếu nhận 401 từ BE, cố gắng refresh token thông qua Supabase và replay request
@@ -69,8 +69,8 @@ axiosClient.interceptors.response.use(
       }
     }
     // nếu lỗi network hoặc response không theo ApiResponse
-    return Promise.reject(error);
+    return Promise.reject(error)
   }
-);
+)
 
-export default axiosClient;
+export default axiosClient

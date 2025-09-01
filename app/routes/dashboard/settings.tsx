@@ -5,7 +5,7 @@ export const handle = {
 
 import React from 'react'
 
-export default function DashboardSettings(){
+export default function DashboardSettings() {
   return (
     <div>
       <h1 className='text-2xl font-bold'>Settings</h1>

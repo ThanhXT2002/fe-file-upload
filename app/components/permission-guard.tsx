@@ -20,11 +20,7 @@ export function UserRoleBadge() {
     }
   }
 
-  return (
-    <Badge className={getRoleColor(userProfile.role)}>
-      {userProfile.role}
-    </Badge>
-  )
+  return <Badge className={getRoleColor(userProfile.role)}>{userProfile.role}</Badge>
 }
 
 // Component để kiểm tra và hiển thị UI dựa trên quyền
@@ -35,12 +31,7 @@ interface PermissionGuardProps {
   fallback?: React.ReactNode
 }
 
-export function PermissionGuard({ 
-  permission, 
-  role, 
-  children, 
-  fallback = null 
-}: PermissionGuardProps) {
+export function PermissionGuard({ permission, role, children, fallback = null }: PermissionGuardProps) {
   const { hasPermission, hasRole } = usePermissions()
 
   const hasAccess = () => {

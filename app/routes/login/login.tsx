@@ -32,14 +32,19 @@ export default function Login() {
 
   type FormValues = z.infer<typeof LoginSchema>
 
-  const { register, handleSubmit, setError, formState: { errors } } = useForm<FormValues>({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm<FormValues>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: '', password: '' }
   })
 
   async function onSubmit(values: FormValues) {
-  setGlobalError(null)
-  setSubmitting(true)
+    setGlobalError(null)
+    setSubmitting(true)
     try {
       const resp = await supabase.auth.signInWithPassword({ email: values.email, password: values.password })
       if (resp.error) {
@@ -52,9 +57,9 @@ export default function Login() {
         setSubmitting(false)
         return
       }
-  toast.success('Login success')
-  if (from) navigate(from)
-  else navigate('/')
+      toast.success('Login success')
+      if (from) navigate(from)
+      else navigate('/')
     } catch (err: any) {
       setGlobalError(err?.message ?? 'Login error')
       toast.error(err?.message ?? 'Login error')
@@ -70,10 +75,24 @@ export default function Login() {
           <h1 className='text-center font-semibold uppercase text-[var(--primary)]'>Login</h1>
           <form onSubmit={handleSubmit(onSubmit)} className='w-full'>
             <div className='input-group relative mb-6'>
-              <InputCommon {...register('email')} type='email' placeholder='Enter your email' error={errors.email?.message?.toString() ?? null} showLabel={false} isRequired />
+              <InputCommon
+                {...register('email')}
+                type='email'
+                placeholder='Enter your email'
+                error={errors.email?.message?.toString() ?? null}
+                showLabel={false}
+                isRequired
+              />
             </div>
             <div className='input-group relative mb-6'>
-              <InputCommon {...register('password')} type='password' placeholder='Enter your password' error={errors.password?.message?.toString() ?? null} showLabel={false} isRequired />
+              <InputCommon
+                {...register('password')}
+                type='password'
+                placeholder='Enter your password'
+                error={errors.password?.message?.toString() ?? null}
+                showLabel={false}
+                isRequired
+              />
             </div>
 
             {globalError && <div className='text-sm text-center text-red-400 mb-2'>{globalError}</div>}

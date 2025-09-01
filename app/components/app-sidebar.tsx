@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from 'react'
 import {
   IconCamera,
   IconChartBar,
@@ -11,13 +11,13 @@ import {
   IconSettings,
   IconUsers,
   IconLifebuoy,
-  IconUserCircle,
-} from "@tabler/icons-react"
+  IconUserCircle
+} from '@tabler/icons-react'
 
 // import { NavDocuments } from "~/components/nav-documents"
-import { NavMain } from "~/components/nav-main"
-import { NavSecondary } from "~/components/nav-secondary"
-import { NavUser } from "~/components/nav-user"
+import { NavMain } from '~/components/nav-main'
+import { NavSecondary } from '~/components/nav-secondary'
+import { NavUser } from '~/components/nav-user'
 import {
   Sidebar,
   SidebarContent,
@@ -25,101 +25,102 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-} from "~/components/ui/sidebar"
-import { usePermissions } from "~/hooks/use-permissions"
+  SidebarMenuItem
+} from '~/components/ui/sidebar'
+import { usePermissions } from '~/hooks/use-permissions'
 
 // Base navigation items for all users
 const baseNavItems = [
   {
-    title: "Dashboard",
-    url: "/",
-    icon: IconDashboard,
+    title: 'Dashboard',
+    url: '/',
+    icon: IconDashboard
   },
   {
-    title: "Profile",
-    url: "/profile",
-    icon: IconUserCircle,
-  },
+    title: 'Profile',
+    url: '/profile',
+    icon: IconUserCircle
+  }
 ]
 
 // Admin-only navigation items
 const adminNavItems = [
   {
-    title: "User Management",
-    url: "/user-management",
-    icon: IconUsers,
+    title: 'User Management',
+    url: '/user-management',
+    icon: IconUsers
   },
   {
-    title: "System Settings",
-    url: "/settings",
-    icon: IconSettings,
-  },
+    title: 'System Settings',
+    url: '/settings',
+    icon: IconSettings
+  }
 ]
 
 // Editor navigation items
 const editorNavItems = [
   {
-    title: "Content Management",
-    url: "#",
-    icon: IconFileDescription,
+    title: 'Content Management',
+    url: '#',
+    icon: IconFileDescription
   },
   {
-    title: "Media Library", 
-    url: "#",
-    icon: IconCamera,
-  },
+    title: 'Media Library',
+    url: '#',
+    icon: IconCamera
+  }
 ]
 
 // User navigation items
 const userNavItems = [
   {
-    title: "My Files",
-    url: "#",
-    icon: IconFolder,
+    title: 'My Files',
+    url: '#',
+    icon: IconFolder
   },
   {
-    title: "Analytics",
-    url: "#",
-    icon: IconChartBar,
-  },
+    title: 'Analytics',
+    url: '#',
+    icon: IconChartBar
+  }
 ]
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fui.shadcn.com%2Fdocs%2Fcomponents%2Favatar&psig=AOvVaw0yOmhy-tp2xb9Z9lhm9p3u&ust=1756802836894000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNjr-dyWt48DFQAAAAAdAAAAABAE",
+    name: 'shadcn',
+    email: 'm@example.com',
+    avatar:
+      'https://www.google.com/url?sa=i&url=https%3A%2F%2Fui.shadcn.com%2Fdocs%2Fcomponents%2Favatar&psig=AOvVaw0yOmhy-tp2xb9Z9lhm9p3u&ust=1756802836894000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNjr-dyWt48DFQAAAAAdAAAAABAE'
   },
   navSecondary: [
     {
-      title: "Support",
-      url: "#",
-      icon: IconLifebuoy,
+      title: 'Support',
+      url: '#',
+      icon: IconLifebuoy
     },
     {
-      title: "Feedback",
-      url: "#",
-      icon: IconHelp,
-    },
+      title: 'Feedback',
+      url: '#',
+      icon: IconHelp
+    }
   ],
   documents: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: IconFileDescription,
+      name: 'Design Engineering',
+      url: '#',
+      icon: IconFileDescription
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: IconFileAi,
+      name: 'Sales & Marketing',
+      url: '#',
+      icon: IconFileAi
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: IconCamera,
-    },
-  ],
+      name: 'Travel',
+      url: '#',
+      icon: IconCamera
+    }
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -145,21 +146,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ...data.user,
     name: userProfile?.name || data.user.name,
     email: userProfile?.email || data.user.email,
-    avatar: userProfile?.avatarUrl || data.user.avatar,
+    avatar: userProfile?.avatarUrl || data.user.avatar
   }
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible='offcanvas' {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">File Manager</span>
+            <SidebarMenuButton asChild className='data-[slot=sidebar-menu-button]:!p-1.5'>
+              <a href='#'>
+                <IconInnerShadowTop className='!size-5' />
+                <span className='text-base font-semibold'>File Manager</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -168,7 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={getNavigationItems()} />
         {/* <NavDocuments items={data.documents} /> */}
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavSecondary items={data.navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={userData} />

@@ -14,7 +14,7 @@ export function usePermissions() {
 
   const hasPermission = (permission: Permission): boolean => {
     if (!userProfile?.role) return false
-    
+
     const userPermissions = ROLE_PERMISSIONS[userProfile.role] || []
     return userPermissions.includes(permission)
   }
@@ -24,7 +24,7 @@ export function usePermissions() {
   }
 
   const isAdmin = (): boolean => hasRole('ADMIN')
-  const isEditor = (): boolean => hasRole('EDITOR') 
+  const isEditor = (): boolean => hasRole('EDITOR')
   const isUser = (): boolean => hasRole('USER')
 
   const canRead = (): boolean => hasPermission('READ')

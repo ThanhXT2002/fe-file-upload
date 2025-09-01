@@ -16,4 +16,3 @@ export default [
   route('reset-password', 'routes/reset-password/reset-password.tsx'),
   route('check-email', 'routes/check-email/check-email.tsx')
 ] satisfies RouteConfig
- 
