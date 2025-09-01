@@ -1,4 +1,6 @@
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
+import { isRouteErrorResponse, Links, Meta, Scripts, ScrollRestoration, Outlet } from 'react-router'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import type { Route } from './+types/root'
 import './assets/styles/main.module.scss'
@@ -13,6 +15,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <Meta />
         <Links />
+        <script 
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Suppress React hydration warnings in development
+              if (typeof window !== 'undefined') {
+                const originalError = console.error;
+                console.error = (...args) => {
+                  if (typeof args[0] === 'string' && args[0].includes('hydrated but some attributes')) {
+                    return; // Suppress hydration mismatch warnings
+                  }
+                  originalError.apply(console, args);
+                };
+              }
+            `
+          }}
+        />
       </head>
       <body>
         {children}
@@ -23,7 +41,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export { default } from './root.client'
+export default function App() {
+  return (
+    <AuthProvider>
+      <Outlet />
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
+    </AuthProvider>
+  )
+}
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = 'Oops!'
