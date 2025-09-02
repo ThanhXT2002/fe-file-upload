@@ -20,6 +20,7 @@ export type UserProfile = {
   id: string
   email: string
   name?: string
+  key: string
   role: 'ADMIN' | 'USER' | 'EDITOR'
   avatarUrl?: string
   createdAt: string

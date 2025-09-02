@@ -35,9 +35,9 @@ function ProfilePage() {
 
   // Handle copy API key to clipboard
   const copyApiKey = async () => {
-    if (userProfile?.id) {
+    if (userProfile?.key) {
       try {
-        await navigator.clipboard.writeText(userProfile.id)
+        await navigator.clipboard.writeText(userProfile.key)
         toast.success('API key copied!')
       } catch {
         toast.error('Unable to copy API key')
@@ -240,7 +240,7 @@ function ProfilePage() {
                 <Label>API Key</Label>
                 <div className='flex items-center space-x-2'>
                   <Input
-                    value={`${userProfile.id.substring(0, 12)}${'*'.repeat(20)}`}
+                    value={`${userProfile.key.substring(0, 12)}${'*'.repeat(20)}`}
                     disabled
                     className='bg-muted font-mono text-xs'
                   />
