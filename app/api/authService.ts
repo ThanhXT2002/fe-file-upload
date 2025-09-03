@@ -13,13 +13,25 @@ const authAxios = axios.create({
 // Add authorization header for auth endpoints
 authAxios.interceptors.request.use(async (cfg) => {
   try {
-    // Import supabase here to avoid circular dependency
-    const { supabase } = await import('./supabaseClient')
-    const { data } = await supabase.auth.getSession()
-    const session = (data as any)?.session
-    if (session?.access_token) {
-      cfg.headers = cfg.headers || {}
-      cfg.headers['Authorization'] = `Bearer ${session.access_token}`
+    // Prefer the cached Authorization header set by setupSupabaseAuth/onAuthStateChange.
+    // Avoid calling supabase.auth.getSession() on every request because it can race with
+    // the SDK's visibility/auto-refresh logic after tab switches. Use cached header first
+    // and only fall back to getSession() if missing.
+    cfg.headers = cfg.headers || {}
+    const cachedAuth = authAxios.defaults.headers.common['Authorization'] || axios.defaults.headers.common['Authorization']
+    if (cachedAuth) {
+      cfg.headers['Authorization'] = cachedAuth
+    } else {
+      try {
+        const { supabase } = await import('./supabaseClient')
+        const { data } = await supabase.auth.getSession()
+        const session = (data as any)?.session
+        if (session?.access_token) {
+          cfg.headers['Authorization'] = `Bearer ${session.access_token}`
+        }
+      } catch {
+        // ignore fallback failure
+      }
     }
   } catch {
     // ignore

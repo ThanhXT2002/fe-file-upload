@@ -33,12 +33,25 @@ setupSupabaseAuth(axiosClient)
 // request interceptor: ensure Authorization header uses latest access token and x-api-key
 axiosClient.interceptors.request.use(async (cfg) => {
   try {
-    // Add Authorization header
-    const { data } = await supabase.auth.getSession()
-    const session = (data as any)?.session
-    if (session?.access_token) {
-      cfg.headers = cfg.headers || {}
-      cfg.headers['Authorization'] = `Bearer ${session.access_token}`
+    // Prefer the cached Authorization header populated by setupSupabaseAuth/onAuthStateChange.
+    // Calling supabase.auth.getSession() on every request can sometimes block or race with
+    // the SDK's visibility/auto-refresh logic after tab switches. Use the cached header first
+    // and only fall back to getSession() if it's missing.
+    cfg.headers = cfg.headers || {}
+    const cachedAuth = axiosClient.defaults.headers.common['Authorization'] || axios.defaults.headers.common['Authorization']
+    if (cachedAuth) {
+      cfg.headers['Authorization'] = cachedAuth
+    } else {
+      // Fallback: try to read current session (best effort)
+      try {
+        const { data } = await supabase.auth.getSession()
+        const session = (data as any)?.session
+        if (session?.access_token) {
+          cfg.headers['Authorization'] = `Bearer ${session.access_token}`
+        }
+      } catch {
+        // ignore fallback failure
+      }
     }
 
     // Add x-api-key header if available

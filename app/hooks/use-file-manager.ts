@@ -19,8 +19,11 @@ export function useFileManager() {
     console.log(`📂 Loading folder: "${path}" (page ${page})`)
     setLoading(true)
     try {
-      // Ensure API key is available
-      await apiKeyRef.current.ensureKey()
+  // Ensure API key is available. Race against a short timeout to avoid indefinite hang
+  // if apiKey initialization stalls (e.g., due to visibility/refresh issues).
+  const ensureKeyPromise = apiKeyRef.current.ensureKey()
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 5000))
+  await Promise.race([ensureKeyPromise, timeout])
 
       const contents = await fileService.browseFolderContents({
         path: path || undefined,
@@ -49,8 +52,10 @@ export function useFileManager() {
     setLoadingMore(true)
 
     try {
-      // Ensure API key is available
-      await apiKeyRef.current.ensureKey()
+  // Ensure API key is available with a timeout guard
+  const ensureKeyPromise = apiKeyRef.current.ensureKey()
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 5000))
+  await Promise.race([ensureKeyPromise, timeout])
 
       const moreContents = await fileService.browseFolderContents({
         path: currentPath || undefined,

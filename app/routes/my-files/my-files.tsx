@@ -16,7 +16,6 @@ import {
   FiRefreshCw,
   FiAlertCircle,
   FiMoreVertical,
-  FiMove,
   FiDownload,
   FiX
 } from 'react-icons/fi'
@@ -24,15 +23,14 @@ import { Button } from '~/components/ui/button'
 import { Card, CardContent } from '~/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '~/components/ui/dropdown-menu'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from '~/components/ui/alert-dialog'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose
+} from '~/components/ui/dialog'
 import { toast } from 'sonner'
 
 export const handle = {
@@ -44,6 +42,8 @@ function MyFiles() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [deleteFileInfo, setDeleteFileInfo] = useState<{ id: string; name: string } | null>(null)
+  const lastFocusedRef = useRef<HTMLElement | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const isInitialized = useRef(false)
 
   // Load initial contents on mount - chỉ chạy 1 lần
@@ -96,7 +96,10 @@ function MyFiles() {
 
   // Handle file delete
   const handleDelete = async (fileId: string, fileName: string) => {
+    // remember currently focused element so we can restore focus after dialog closes
+    lastFocusedRef.current = document.activeElement as HTMLElement | null
     setDeleteFileInfo({ id: fileId, name: fileName })
+    setDialogOpen(true)
   }
 
   // Confirm and execute delete
@@ -104,9 +107,12 @@ function MyFiles() {
     if (!deleteFileInfo) return
 
     try {
-      await fileManager.deleteFile(deleteFileInfo.id)
+      // close the dialog first to let Radix animate out
+  setDialogOpen(false)
+  // give Radix a short moment to finish its close animation and cleanup
+  await new Promise((res) => setTimeout(res, 150))
+  await fileManager.deleteFile(deleteFileInfo.id)
       toast.success('File deleted successfully!')
-      setDeleteFileInfo(null)
     } catch {
       toast.error('Failed to delete file. Please try again.')
     }
@@ -350,10 +356,6 @@ function MyFiles() {
                                               <FiDownload className='w-4 h-4 mr-2' />
                                               Download
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                              <FiMove className='w-4 h-4 mr-2' />
-                                              Move
-                                            </DropdownMenuItem>
                                             <DropdownMenuItem
                                               className='text-red-600 focus:text-red-600'
                                               onClick={() => handleDelete(file.id, file.originalName)}
@@ -433,10 +435,6 @@ function MyFiles() {
                                               <DropdownMenuItem onClick={() => window.open(file.url, '_blank')}>
                                                 <FiDownload className='w-4 h-4 mr-2' />
                                                 Download
-                                              </DropdownMenuItem>
-                                              <DropdownMenuItem>
-                                                <FiMove className='w-4 h-4 mr-2' />
-                                                Move
                                               </DropdownMenuItem>
                                               <DropdownMenuItem
                                                 className='text-red-600 focus:text-red-600'
@@ -520,25 +518,41 @@ function MyFiles() {
             </Card>
           )}
 
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteFileInfo} onOpenChange={(open: boolean) => !open && setDeleteFileInfo(null)} >
-          <AlertDialogContent >
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
+        {/* Delete Confirmation Dialog (shadcn Dialog) */}
+        <Dialog
+          open={dialogOpen}
+          onOpenChange={(open) => {
+            setDialogOpen(open)
+            if (!open) {
+              // Delay clearing state until after Radix finishes its close animation
+              setTimeout(() => {
+                try {
+                  lastFocusedRef.current?.focus()
+                } catch {
+                  // ignore focus errors
+                }
+                setDeleteFileInfo(null)
+              }, 120)
+            }
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Are you sure?</DialogTitle>
+              <DialogDescription>
                 This action cannot be undone. This will permanently delete "{deleteFileInfo?.name}" from the server.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-             <div className='flex justify-end gap-x-2'>
-               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDelete} className='bg-red-600 hover:bg-red-700 text-white'>
-                Delete
-              </AlertDialogAction>
-             </div>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <div className='flex justify-end gap-x-2'>
+                <DialogClose asChild>
+                  <Button variant='outline'>Cancel</Button>
+                </DialogClose>
+                <Button onClick={confirmDelete} className='bg-red-600 hover:bg-red-700 text-white'>Delete</Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
