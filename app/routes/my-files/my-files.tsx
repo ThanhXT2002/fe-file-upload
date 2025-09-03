@@ -145,7 +145,7 @@ function MyFiles() {
         </nav>
 
         {/* Upload Button - Fixed Position */}
-        <div className='fixed bg-[var(--senary)] border border-primary w-10  aspect-square top-1 md:top-3 right-4 md:right-10 rounded-full z-50 '>
+        <div className='fixed bg-[var(--senary)] border border-primary w-10  aspect-square bottom-1 md:bottom-3 right-4 md:right-10 rounded-full z-50 '>
           <button className='w-full h-full flex__middle' onClick={() => setShowUploadModal(true)}>
             <FiUpload className='w-5 h-5 text-primary' />
           </button>
@@ -474,7 +474,7 @@ function MyFiles() {
                           onClick={fileManager.loadMoreFiles}
                           disabled={fileManager.loadingMore}
                           variant='outline'
-                          className='bg-white hover:bg-[var(--quinary)] border-[var(--quaternary)] hover:border-[var(--secondary)] text-[var(--secondary)] hover:text-[var(--primary)] px-6 py-2'
+                          className='bg-white hover:bg-[var(--quinary)] border-[var(--quaternary)] hover:border-[var(--secondary)] text-[var(--secondary)] hover:text-[var(--primary)] px-6 py-2 cursor-pointer'
                         >
                           {fileManager.loadingMore ? (
                             <div className='flex items-center space-x-2'>
@@ -521,8 +521,8 @@ function MyFiles() {
           )}
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteFileInfo} onOpenChange={(open: boolean) => !open && setDeleteFileInfo(null)}>
-          <AlertDialogContent>
+        <AlertDialog open={!!deleteFileInfo} onOpenChange={(open: boolean) => !open && setDeleteFileInfo(null)} >
+          <AlertDialogContent >
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
               <AlertDialogDescription>

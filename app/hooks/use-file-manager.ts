@@ -138,23 +138,37 @@ export function useFileManager() {
     [currentPath, loadFolderContents]
   )
 
-  // Delete file
+  // Delete file (optimistic local update)
   const deleteFile = useCallback(
     async (fileId: string) => {
       console.log(`🗑️ Deleting file: ${fileId}`)
       try {
+        // Call delete API
         await fileService.deleteFile(fileId)
-        // Reload current folder
-        console.log('✅ File deleted, reloading folder...')
-        setCurrentPage(1) // Reset to first page
-        await loadFolderContents(currentPath, 1)
+
+        // Optimistically update local folderContents to remove the deleted file
+        setFolderContents((prev) => {
+          if (!prev) return prev
+          const newFiles = prev.files.filter((f) => f.id !== fileId)
+          const newPagination = {
+            ...prev.pagination,
+            total: Math.max(0, prev.pagination.total - 1)
+          }
+          return {
+            ...prev,
+            files: newFiles,
+            pagination: newPagination
+          }
+        })
+
+        console.log('✅ File deleted, updated local state')
         return true
       } catch (error) {
         console.error('❌ Delete failed:', error)
         throw error
       }
     },
-    [currentPath, loadFolderContents]
+    []
   )
 
   // Rename file
