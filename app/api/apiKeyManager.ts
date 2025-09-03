@@ -20,17 +20,14 @@ class ApiKeyManager {
   async initialize(): Promise<string | null> {
     // If already initializing, return the same promise
     if (this.initializePromise) {
-      console.log('🔄 API Key initialization already in progress...')
       return this.initializePromise
     }
 
     // If already initialized, return cached result
     if (this.isInitialized && this.apiKey) {
-      console.log('✅ API Key already initialized')
       return this.apiKey
     }
 
-    console.log('🚀 Initializing API Key...')
 
     // Create and cache the promise
     this.initializePromise = this._doInitialize()
@@ -46,7 +43,6 @@ class ApiKeyManager {
 
   private async _doInitialize(): Promise<string | null> {
     try {
-      console.log('📞 Calling getProfile() to get API key...')
       const response = await getProfile()
       const userProfile = response.data
 
@@ -54,14 +50,13 @@ class ApiKeyManager {
         this.apiKey = userProfile.key
         setApiKey(this.apiKey)
         this.isInitialized = true
-        console.log('✅ API Key initialized successfully:', this.apiKey.substring(0, 8) + '...')
         return this.apiKey
       } else {
-        console.warn('⚠️ No API key found in user profile')
+        console.warn('No API key found in user profile')
         return null
       }
     } catch (error) {
-      console.error('❌ Failed to initialize API key:', error)
+      console.error('Failed to initialize API key:', error)
       return null
     }
   }
@@ -84,7 +79,6 @@ class ApiKeyManager {
     this.isInitialized = false
     this.initializePromise = null
     clearApiKey()
-    console.log('🧹 API Key cleared')
   }
 
   // Check if API key is available
@@ -95,10 +89,8 @@ class ApiKeyManager {
   // Ensure API key is available (initialize if needed)
   async ensureKey(): Promise<string | null> {
     if (this.hasKey()) {
-      console.log('✅ API Key already available')
       return this.apiKey
     }
-    console.log('🔍 API Key not found, initializing...')
     return await this.initialize()
   }
 }

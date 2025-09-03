@@ -16,13 +16,12 @@ export function useFileManager() {
 
   // Load folder contents
   const loadFolderContents = useCallback(async (path: string = '', page: number = 1, limit: number = 20) => {
-    console.log(`📂 Loading folder: "${path}" (page ${page})`)
     setLoading(true)
     try {
   // Ensure API key is available. Race against a short timeout to avoid indefinite hang
   // if apiKey initialization stalls (e.g., due to visibility/refresh issues).
   const ensureKeyPromise = apiKeyRef.current.ensureKey()
-  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 5000))
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 3000))
   await Promise.race([ensureKeyPromise, timeout])
 
       const contents = await fileService.browseFolderContents({
@@ -33,10 +32,9 @@ export function useFileManager() {
       setFolderContents(contents)
       setCurrentPath(path)
       setCurrentPage(page)
-      console.log(`✅ Loaded ${contents.files.length} files, ${contents.subfolders.length} folders`)
       return contents
     } catch (error) {
-      console.error('❌ Failed to load folder contents:', error)
+      console.error('Failed to load folder contents:', error)
       throw error
     } finally {
       setLoading(false)
@@ -48,7 +46,6 @@ export function useFileManager() {
     if (!folderContents || loadingMore) return
 
     const nextPage = currentPage + 1
-    console.log(`📂 Loading more files: page ${nextPage}`)
     setLoadingMore(true)
 
     try {
@@ -74,10 +71,9 @@ export function useFileManager() {
       )
 
       setCurrentPage(nextPage)
-      console.log(`✅ Loaded ${moreContents.files.length} more files`)
       return moreContents
     } catch (error) {
-      console.error('❌ Failed to load more files:', error)
+      console.error('Failed to load more files:', error)
       throw error
     } finally {
       setLoadingMore(false)
@@ -91,7 +87,6 @@ export function useFileManager() {
   const navigateToFolder = useCallback(
     (folderName: string) => {
       const newPath = currentPath ? `${currentPath}/${folderName}` : folderName
-      console.log(`🔄 Navigating to: ${newPath}`)
       setCurrentPage(1) // Reset page when navigating
       return loadFolderContents(newPath, 1)
     },
@@ -103,7 +98,6 @@ export function useFileManager() {
     const pathParts = currentPath.split('/').filter(Boolean)
     pathParts.pop()
     const parentPath = pathParts.join('/')
-    console.log(`⬅️ Going back to: ${parentPath}`)
     setCurrentPage(1) // Reset page when going back
     return loadFolderContents(parentPath, 1)
   }, [currentPath, loadFolderContents])
@@ -111,7 +105,6 @@ export function useFileManager() {
   // Upload files
   const uploadFiles = useCallback(
     async (files: File[], folderName?: string): Promise<UploadResult> => {
-      console.log(`📤 Uploading ${files.length} files to: ${folderName || 'root'}`)
       setUploading(true)
       try {
         // Validate files first
@@ -127,14 +120,13 @@ export function useFileManager() {
 
         // Reload current folder after successful upload
         if (result.success.length > 0) {
-          console.log(`✅ Uploaded ${result.success.length} files, reloading folder...`)
           setCurrentPage(1) // Reset to first page
           await loadFolderContents(currentPath, 1)
         }
 
         return result
       } catch (error) {
-        console.error('❌ Upload failed:', error)
+        console.error(' Upload failed:', error)
         throw error
       } finally {
         setUploading(false)
@@ -146,7 +138,6 @@ export function useFileManager() {
   // Delete file (optimistic local update)
   const deleteFile = useCallback(
     async (fileId: string) => {
-      console.log(`🗑️ Deleting file: ${fileId}`)
       try {
         // Call delete API
         await fileService.deleteFile(fileId)
@@ -166,10 +157,9 @@ export function useFileManager() {
           }
         })
 
-        console.log('✅ File deleted, updated local state')
         return true
       } catch (error) {
-        console.error('❌ Delete failed:', error)
+        console.error(' Delete failed:', error)
         throw error
       }
     },
@@ -179,16 +169,14 @@ export function useFileManager() {
   // Rename file
   const renameFile = useCallback(
     async (fileId: string, newName: string) => {
-      console.log(`✏️ Renaming file ${fileId} to: ${newName}`)
       try {
         await fileService.updateFile(fileId, { originalName: newName })
         // Reload current folder
-        console.log('✅ File renamed, reloading folder...')
         setCurrentPage(1) // Reset to first page
         await loadFolderContents(currentPath, 1)
         return true
       } catch (error) {
-        console.error('❌ Rename failed:', error)
+        console.error(' Rename failed:', error)
         throw error
       }
     },
