@@ -6,6 +6,7 @@ export default [
     index('routes/dashboard/index.tsx'),
     route('settings', 'routes/dashboard/settings.tsx'),
     route('profile', 'routes/profile/profile.tsx'),
+    route('my-files', 'routes/my-files/my-files.tsx'),
     route('user-management', 'routes/user-management/user-management.tsx')
   ]),
 

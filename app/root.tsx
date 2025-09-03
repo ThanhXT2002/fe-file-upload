@@ -6,6 +6,7 @@ import type { Route } from './+types/root'
 import './assets/styles/main.module.scss'
 import './app.css'
 import { AuthProvider } from './context/auth'
+import { Toaster } from './components/ui/sonner'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Outlet />
+      <Toaster />
       <ToastContainer
         position='top-right'
         autoClose={4000}

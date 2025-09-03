@@ -2,6 +2,25 @@ import axios, { AxiosError, type AxiosResponse } from 'axios'
 import type { ApiResponse, ApiResponseOk, ApiResponseError } from '~/type/apiTypes'
 import { supabase, setupSupabaseAuth } from './supabaseClient'
 
+// Store API key globally
+let globalApiKey: string | null = null
+
+// Function to set API key
+export const setApiKey = (apiKey: string) => {
+  globalApiKey = apiKey
+  // Also set it on axios default headers
+  axiosClient.defaults.headers.common['x-api-key'] = apiKey
+}
+
+// Function to get current API key
+export const getApiKey = () => globalApiKey
+
+// Function to clear API key
+export const clearApiKey = () => {
+  globalApiKey = null
+  delete axiosClient.defaults.headers.common['x-api-key']
+}
+
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000,
@@ -11,14 +30,21 @@ const axiosClient = axios.create({
 // integrate supabase auth with axios defaults
 setupSupabaseAuth(axiosClient)
 
-// request interceptor: ensure Authorization header uses latest access token
+// request interceptor: ensure Authorization header uses latest access token and x-api-key
 axiosClient.interceptors.request.use(async (cfg) => {
   try {
+    // Add Authorization header
     const { data } = await supabase.auth.getSession()
     const session = (data as any)?.session
     if (session?.access_token) {
       cfg.headers = cfg.headers || {}
       cfg.headers['Authorization'] = `Bearer ${session.access_token}`
+    }
+
+    // Add x-api-key header if available
+    if (globalApiKey) {
+      cfg.headers = cfg.headers || {}
+      cfg.headers['x-api-key'] = globalApiKey
     }
   } catch {
     // ignore

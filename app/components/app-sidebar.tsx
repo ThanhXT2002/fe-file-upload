@@ -75,7 +75,7 @@ const editorNavItems = [
 const userNavItems = [
   {
     title: 'My Files',
-    url: '#',
+    url: '/my-files',
     icon: IconFolder
   },
   {
