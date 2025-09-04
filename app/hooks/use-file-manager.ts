@@ -18,11 +18,11 @@ export function useFileManager() {
   const loadFolderContents = useCallback(async (path: string = '', page: number = 1, limit: number = 20) => {
     setLoading(true)
     try {
-  // Ensure API key is available. Race against a short timeout to avoid indefinite hang
-  // if apiKey initialization stalls (e.g., due to visibility/refresh issues).
-  const ensureKeyPromise = apiKeyRef.current.ensureKey()
-  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 3000))
-  await Promise.race([ensureKeyPromise, timeout])
+      // Ensure API key is available. Race against a short timeout to avoid indefinite hang
+      // if apiKey initialization stalls (e.g., due to visibility/refresh issues).
+      const ensureKeyPromise = apiKeyRef.current.ensureKey()
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 3000))
+      await Promise.race([ensureKeyPromise, timeout])
 
       const contents = await fileService.browseFolderContents({
         path: path || undefined,
@@ -49,10 +49,10 @@ export function useFileManager() {
     setLoadingMore(true)
 
     try {
-  // Ensure API key is available with a timeout guard
-  const ensureKeyPromise = apiKeyRef.current.ensureKey()
-  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 5000))
-  await Promise.race([ensureKeyPromise, timeout])
+      // Ensure API key is available with a timeout guard
+      const ensureKeyPromise = apiKeyRef.current.ensureKey()
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('ensureKey timeout')), 5000))
+      await Promise.race([ensureKeyPromise, timeout])
 
       const moreContents = await fileService.browseFolderContents({
         path: currentPath || undefined,
@@ -136,35 +136,32 @@ export function useFileManager() {
   )
 
   // Delete file (optimistic local update)
-  const deleteFile = useCallback(
-    async (fileId: string) => {
-      try {
-        // Call delete API
-        await fileService.deleteFile(fileId)
+  const deleteFile = useCallback(async (fileId: string) => {
+    try {
+      // Call delete API
+      await fileService.deleteFile(fileId)
 
-        // Optimistically update local folderContents to remove the deleted file
-        setFolderContents((prev) => {
-          if (!prev) return prev
-          const newFiles = prev.files.filter((f) => f.id !== fileId)
-          const newPagination = {
-            ...prev.pagination,
-            total: Math.max(0, prev.pagination.total - 1)
-          }
-          return {
-            ...prev,
-            files: newFiles,
-            pagination: newPagination
-          }
-        })
+      // Optimistically update local folderContents to remove the deleted file
+      setFolderContents((prev) => {
+        if (!prev) return prev
+        const newFiles = prev.files.filter((f) => f.id !== fileId)
+        const newPagination = {
+          ...prev.pagination,
+          total: Math.max(0, prev.pagination.total - 1)
+        }
+        return {
+          ...prev,
+          files: newFiles,
+          pagination: newPagination
+        }
+      })
 
-        return true
-      } catch (error) {
-        console.error(' Delete failed:', error)
-        throw error
-      }
-    },
-    []
-  )
+      return true
+    } catch (error) {
+      console.error(' Delete failed:', error)
+      throw error
+    }
+  }, [])
 
   // Rename file
   const renameFile = useCallback(

@@ -18,7 +18,8 @@ authAxios.interceptors.request.use(async (cfg) => {
     // the SDK's visibility/auto-refresh logic after tab switches. Use cached header first
     // and only fall back to getSession() if missing.
     cfg.headers = cfg.headers || {}
-    const cachedAuth = authAxios.defaults.headers.common['Authorization'] || axios.defaults.headers.common['Authorization']
+    const cachedAuth =
+      authAxios.defaults.headers.common['Authorization'] || axios.defaults.headers.common['Authorization']
     if (cachedAuth) {
       cfg.headers['Authorization'] = cachedAuth
     } else {

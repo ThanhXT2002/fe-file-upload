@@ -28,7 +28,6 @@ class ApiKeyManager {
       return this.apiKey
     }
 
-
     // Create and cache the promise
     this.initializePromise = this._doInitialize()
 

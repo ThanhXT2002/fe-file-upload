@@ -108,10 +108,10 @@ function MyFiles() {
 
     try {
       // close the dialog first to let Radix animate out
-  setDialogOpen(false)
-  // give Radix a short moment to finish its close animation and cleanup
-  await new Promise((res) => setTimeout(res, 150))
-  await fileManager.deleteFile(deleteFileInfo.id)
+      setDialogOpen(false)
+      // give Radix a short moment to finish its close animation and cleanup
+      await new Promise((res) => setTimeout(res, 150))
+      await fileManager.deleteFile(deleteFileInfo.id)
       toast.success('File deleted successfully!')
     } catch {
       toast.error('Failed to delete file. Please try again.')
@@ -548,7 +548,9 @@ function MyFiles() {
                 <DialogClose asChild>
                   <Button variant='outline'>Cancel</Button>
                 </DialogClose>
-                <Button onClick={confirmDelete} className='bg-red-600 hover:bg-red-700 text-white'>Delete</Button>
+                <Button onClick={confirmDelete} className='bg-red-600 hover:bg-red-700 text-white'>
+                  Delete
+                </Button>
               </div>
             </DialogFooter>
           </DialogContent>
